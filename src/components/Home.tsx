@@ -1,5 +1,6 @@
 
 import { CSSProperties } from 'react';
+import  welcomeImage from './images/web-des.svg';
 
 function Home() {
   const containerStyle: CSSProperties = {
@@ -34,7 +35,7 @@ function Home() {
     <div style={containerStyle}>
       <div style={imageContainerStyle}>
         <img
-          src="/src/components/images/web-des.svg"
+          src={welcomeImage}
           alt="Description"
           style={imageStyle}
         />
