@@ -7,7 +7,7 @@ function Home() {
   const [employee, setEmployee] = useState<any>({});
   const { token , employeeID } = useAuth();
 
-  useEffect(() => {
+  const employeecall= () => {
   const baseUrl=(`https://thaydb.vercel.app`);
   axios
   .get(`${baseUrl}/api/employee/${employeeID}`, {
@@ -22,7 +22,10 @@ function Home() {
   .catch((error) => {
     console.error("Error fetching employee data:", error);
   });
-}), [employeeID,employee, token]
+};
+useEffect(() => {
+  employeecall();
+}, [token, employeeID]);
 
   const containerStyle: CSSProperties = {
     display: 'flex',

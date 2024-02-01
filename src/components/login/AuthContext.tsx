@@ -31,44 +31,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [employeeID, setEmployeeID] = useState<string | null>(null);
   const [roleName, setRoleName] = useState<string | null>(null);
 
-  const navigate = useNavigate(); // Get history object
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = Cookies.get('token');
-    if (token) {
-      try {
-        const decodedToken: any = jwtDecode(token);
-        setEmployeeID(decodedToken.employeeID);
-        setRoleName(decodedToken.roleName);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error decoding token:', error);
-        logout();
-      }
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
-
-  const login = (token: string) => {
-    Cookies.set('token', token, { expires: 1/24 });
+useEffect(() => {
+  const token = Cookies.get('token');
+  if (token) {
     try {
       const decodedToken: any = jwtDecode(token);
       setEmployeeID(decodedToken.employeeID);
       setRoleName(decodedToken.roleName);
       setIsLoggedIn(true);
+
+      // Calculate expiration time in milliseconds
+      const expirationTimeInHours = 1;
+      const expirationInMilliseconds = expirationTimeInHours * 60 * 60 * 1000;
+
+      // Set a timeout to automatically log out after the specified expiration time
+      setTimeout(() => {
+        logout();
+      }, expirationInMilliseconds);
     } catch (error) {
       console.error('Error decoding token:', error);
       logout();
     }
-  };
+  } else {
+    setIsLoggedIn(false);
+  }
+}, []);
+
+const login = (token: string) => {
+  const expirationTimeInHours = 1;
+  const expirationInMinutes = expirationTimeInHours * 60;
+
+  Cookies.set('token', token, { expires: expirationInMinutes });
+
+  try {
+    const decodedToken: any = jwtDecode(token);
+    setEmployeeID(decodedToken.employeeID);
+    setRoleName(decodedToken.roleName);
+    setIsLoggedIn(true);
+
+    // Calculate expiration time in milliseconds
+    const expirationInMilliseconds = expirationInMinutes * 60 * 1000;
+
+    // Set a timeout to automatically log out after the specified expiration time
+    setTimeout(() => {
+      logout();
+    }, expirationInMilliseconds);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    logout();
+  }
+};
 
   const logout = () => {
     Cookies.remove('token');
     setIsLoggedIn(false);
     setEmployeeID(null);
     setRoleName(null);
-    navigate('/login'); // Redirect to the login page
+    navigate('/'); // Redirect to the login page
   };
 
   return (
